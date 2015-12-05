@@ -1,0 +1,18 @@
+{
+    "email": "midkiff.iot@gmail.com",
+    "password": "mdk_2015_iot!",
+    "interval": 15,
+    "notification_recipients": ["midkiff.km@gmail.com"],
+    "imap_server": "imap.gmail.com",
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "repos": [
+        {
+            "email_folder": "rPIWebUI",
+            "repo_folder": "/home/pi/RaspberryPiWeb",
+            "branch": "master",
+            "pre": "echo \"Pre Command\"",
+            "post": "echo \"Post Command\""
+        }
+    ]
+}
