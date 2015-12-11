@@ -35,6 +35,11 @@ class Manager(object):
         self.logger.addHandler(ch)
         self.logger.setLevel(logging.INFO)
         
+        # GIT Repositories
+        self.repos = [Repo(repo_config) for repo_config in config['repos']]
+        self.branch_regex = re.compile('(?:.+Branch:\s+)(.+)')
+        self.commit_regex = re.compile('(?:.+Commit:\s+)(.+)')
+
         try:
             # General Information
             self.notifiees = config['notification_recipients']
@@ -53,11 +58,6 @@ class Manager(object):
             self.smtp.starttls()
             self.smtp.login(config['email'], config['password'])
             self.logger.info('Connection established to SMTP server : ' + config['smtp_server'])
-            
-            # GIT Repositories
-            self.repos = [Repo(repo_config) for repo_config in config['repos']]
-            self.branch_regex = re.compile('(?:.+Branch:\s+)(.+)')
-            self.commit_regex = re.compile('(?:.+Commit:\s+)(.+)')
         except KeyError as e:
             message = 'Missing key in configuration : ' + e.message
             self.logger.error(message)
@@ -101,10 +101,10 @@ class Manager(object):
  
                         branch = self.branch_regex.findall(data[0][1])[0].split('/')[-1].strip('\r')
                         commit = self.commit_regex.findall(data[0][1])[0]
-                        print branch 
                         prev_commit = repo.commit
                         
                         self.logger.info(branch + ', ' + repo.branch + ' -- ' + commit + ', ' + prev_commit)
+
                         if branch == repo.branch and commit != prev_commit:
                             self.logger.info('Updating repository : ' + repo.folder)
                             
