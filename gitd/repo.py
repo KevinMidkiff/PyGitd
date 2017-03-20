@@ -1,19 +1,14 @@
+"""Representation of a git repository
+"""
 import subprocess as sub
 import re
 from functools import wraps
 import os
-
-
-class RepoError(Exception):
-    """
-    Exception thrown when a repo enconters an error
-    """
-    pass
+from exc import RepoError
 
 
 def goto_git_repo(f):
-    """
-    Decorator to go to and return from a git repository to execute a command.
+    """Decorator to go to and return from a git repository to execute a command.
     """
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -26,17 +21,17 @@ def goto_git_repo(f):
     return wrapper
 
 
-class Repo(object):
-    def __init__(self, conf_dict):
+class Repo:
+    def __init__(self, folder, target_branch):
+        """Constructor
         """
-        << ADD DOCUMENTATION >>
-        """
-        self.email_folder = conf_dict['email_folder']
         
         # Should I have it automatically change branches?
         # self.branch = conf_dict['branch']
 
-        self.folder = conf_dict['repo_folder']
+        # self.folder = conf_dict['repo_folder']
+        self.folder = folder
+        self.target_branch
         # Checking that the given repo_folder exists
         if not os.path.exists(conf_dict['repo_folder']):
             raise RepoError('Repository folder: ' + conf_dict['repo_folder'] \
@@ -57,6 +52,8 @@ class Repo(object):
 
     @property
     def commit(self):
+        """Current commit
+        """
         try:
             return self.commit_regex.findall(self.show())[0]
         except IndexError:
@@ -64,7 +61,9 @@ class Repo(object):
 
     @property
     @goto_git_repo
-    def branch(self):
+    def current_branch(self):
+        """Get the current branch of the repository.
+        """
         try:
             output = sub.check_output(['git', 'branch'])
             branch = self.branch_regex.findall(output)[0]
@@ -76,8 +75,7 @@ class Repo(object):
 
     @goto_git_repo
     def show(self):
-        """
-        Executes 'git show' and returns the output, raises a RepoError if an error is
+        """Executes 'git show' and returns the output, raises a RepoError if an error is
         encountered while running the command.
         """
         try:
@@ -88,9 +86,10 @@ class Repo(object):
     
     @goto_git_repo
     def pull(self):
+        """Execute a 'git pull' command.
+        """
         try:
             output = sub.check_output(['git', 'pull'])
         except sub.CalledProcessError as e:
             raise RepoError('GitRepo::pull: ' + e.message)
         return output
-

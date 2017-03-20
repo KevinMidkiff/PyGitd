@@ -52,5 +52,3 @@ class Git(object):
             return sub.check_output(['git', 'pull'])
         except sub.CalledProcessError as e:
             raise GitException('Git::pull: ' + e.message)
-
-
